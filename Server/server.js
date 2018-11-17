@@ -14,6 +14,19 @@ var io= socketID(server)
 io.on('connection', (socket)=>{
     console.log('new user connected');
 
+    //message for Admin
+    socket.emit("newmsg",{
+        from: "Monu",
+        text: "Welcome to chat Window"
+    });
+
+    //message for Admin if new user join
+    socket.broadcast.emit("newmsg",{
+      from: "Anil",
+      text: "New User joined"
+    });
+
+
     //To check User disConnected or not ...here are calling socket
     //because server will tell user is connected or
 
@@ -41,8 +54,15 @@ io.on('connection', (socket)=>{
     //creatmessage getting that is created in index.js(clint side)
     socket.on('createmessage', (msg)=>{
       console.log('Message',msg);
-      io.emit('newmsg',{
-        from: msg.from,
+      //io.emit is for broadcasting including him also
+      // io.emit('newmsg',{
+      //   from: msg.from,
+      //   text: msg.text
+      // });
+
+      //socket.broadcast.emit is same as io.emit but it exclude himself other than him will get the message
+      socket.broadcast.emit('newmsg',{
+        from:msg.from,
         text: msg.text
       });
 
