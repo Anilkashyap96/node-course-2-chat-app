@@ -20,27 +20,32 @@ io.on('connection', (socket)=>{
 
     //socket.emit is to create custom event
     //newmail is a custom event crated in server side
-    socket.emit('newemail',{
-      from:'anilkashyap1996@gmail.com',
-      text: 'Hi, I sent mail',
-      createdAt: 102
-    })
+    // socket.emit('newemail',{
+    //   from:'anilkashyap1996@gmail.com',
+    //   text: 'Hi, I sent mail',
+    //   createdAt: 102
+    // })
 
     //newmsg is a custom event crated in server side
-    socket.emit('newmsg',{
-        from:'9407233844',
-        text:'Hi I am Anil'
-    });
+    // socket.emit('newmsg',{
+    //     from:'9407233844',
+    //     text:'Hi I am Anil'
+    // });
 
 
     //createmail getting that is created in index.js(clint side)
-    socket.on('createMail',(mail)=>{
-        console.log(mail);
-    });
+    // socket.on('createMail',(mail)=>{
+    //     console.log(mail);
+    // });
 
     //creatmessage getting that is created in index.js(clint side)
     socket.on('createmessage', (msg)=>{
       console.log('Message',msg);
+      io.emit('newmsg',{
+        from: msg.from,
+        text: msg.text
+      });
+
     });
 
     socket.on('disconnect',()=>{
