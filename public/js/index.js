@@ -20,14 +20,15 @@ socket.on('connect',function(){
 
 });
 
+
 // To check Server goes disconnectedor not
 socket.on('disconnect',function(){
   console.log('disConnected from Server');
 });
 
-// socket.on('newmsg',function(msg){
-//   console.log("msg from server Side", msg);
-// });
+socket.on('newmsg',function(msg){
+  console.log("msg from server Side", msg);
+});
 
 // socket.on('newemail', function(email){
 //   console.log("Email", email);
