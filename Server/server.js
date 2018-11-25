@@ -49,17 +49,14 @@ io.on('connection', (socket)=>{
     // });
 
     //creatmessage getting that is created in index.js(clint side)
-    socket.on('createmessage', (msg)=>{
+    socket.on('createmessage', (msg, callback)=>{
       console.log('Message',msg);
       //io.emit is for broadcasting including him also
-      // io.emit('newmsg',{
-      //   from: msg.from,
-      //   text: msg.text
-      // });
+      io.emit('newmsg',generateMessage(msg.from, msg.text));
 
       //socket.broadcast.emit is same as io.emit but it exclude himself other than him will get the message
-      socket.broadcast.emit('newmsg',generateMessage(msg.from, msg.text));
-
+      //socket.broadcast.emit('newmsg',generateMessage(msg.from, msg.text));
+      callback("This is from server");
     });
 
     socket.on('disconnect',()=>{
