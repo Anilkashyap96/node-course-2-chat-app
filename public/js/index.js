@@ -13,10 +13,10 @@ socket.on('connect',function(){
   // });
 
   //createmessage is a custom event
-  socket.emit('createmessage', {
-    from:"9407233844",
-    text:"Hey"
-  })
+  // socket.emit('createmessage', {
+  //   from:"9407233844",
+  //   text:"Hey"
+  // })
 
 });
 

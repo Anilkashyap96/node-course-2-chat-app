@@ -2,6 +2,9 @@ const path = require('path');
 const http= require('http');
 const socketID =require('socket.io');
 const express = require('express');
+const {generateMessage} = require('./utils/message');
+
+
 var app = express();
 const port = process.env.PORT||3000;
 const publicPath = path.join(__dirname,'../public');
@@ -15,16 +18,10 @@ io.on('connection', (socket)=>{
     console.log('new user connected');
 
     //message for Admin
-    socket.emit("newmsg",{
-        from: "Monu",
-        text: "Welcome to chat Window"
-    });
+    socket.emit("newmsg",generateMessage("Admin", "Welcome to new chat App"));
 
     //message for Admin if new user join
-    socket.broadcast.emit("newmsg",{
-      from: "Anil",
-      text: "New User joined"
-    });
+    socket.broadcast.emit("newmsg",generateMessage("Admin", "New user connected"));
 
 
     //To check User disConnected or not ...here are calling socket
@@ -61,10 +58,7 @@ io.on('connection', (socket)=>{
       // });
 
       //socket.broadcast.emit is same as io.emit but it exclude himself other than him will get the message
-      socket.broadcast.emit('newmsg',{
-        from:msg.from,
-        text: msg.text
-      });
+      socket.broadcast.emit('newmsg',generateMessage(msg.from, msg.text));
 
     });
 
