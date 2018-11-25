@@ -2,7 +2,7 @@ const path = require('path');
 const http= require('http');
 const socketID =require('socket.io');
 const express = require('express');
-const {generateMessage} = require('./utils/message');
+const {generateMessage,generateLocationMessage} = require('./utils/message');
 
 
 var app = express();
@@ -56,7 +56,11 @@ io.on('connection', (socket)=>{
 
       //socket.broadcast.emit is same as io.emit but it exclude himself other than him will get the message
       //socket.broadcast.emit('newmsg',generateMessage(msg.from, msg.text));
-      callback("This is from server");
+      callback();
+    });
+
+    socket.on('createLocationMessage',(coords)=>{
+      io.emit('newlocationmsg', generateLocationMessage('Admin', coords.latitude,coords.longitude));
     });
 
     socket.on('disconnect',()=>{
