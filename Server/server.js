@@ -3,7 +3,8 @@ const http= require('http');
 const socketID =require('socket.io');
 const express = require('express');
 const {generateMessage,generateLocationMessage} = require('./utils/message');
-
+const {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
 
 var app = express();
 const port = process.env.PORT||3000;
@@ -11,17 +12,40 @@ const publicPath = path.join(__dirname,'../public');
 
 app.use(express.static(publicPath));
 var server= http.createServer(app);
-var io= socketID(server)
+var io= socketID(server);
+var users = new Users();
 
 //To check new client connection
 io.on('connection', (socket)=>{
-    console.log('new user connected');
+    //console.log('new user connected');
 
-    //message for Admin
-    socket.emit("newmsg",generateMessage("Admin", "Welcome to new chat App"));
 
-    //message for Admin if new user join
-    socket.broadcast.emit("newmsg",generateMessage("Admin", "New user connected"));
+    socket.on('join', (params, callback) =>{
+      if(!isRealString(params.name) || !isRealString(params.room))
+      {
+        return callback('Name and room are required.');
+      }
+      socket.join(params.room);
+      users.removeUser(socket.id);
+      users.addUser(socket.id, params.name, params.room);
+      io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+
+      //socket.leave('The office Fans');
+
+      //io.emit->io.to('The office Fans').emit //to send everyone forr specific room
+      //socket.broadcast.emit->socket.broadcast.to('The office Fans').emit
+      //socket.emit->socket.to('The office Fans').emit0
+
+      //message for Admin
+      socket.emit("newmsg",generateMessage("Admin", "Welcome to new chat App"));
+
+      //message for Admin if new user join
+      socket.broadcast.to(params.room).emit("newmsg",generateMessage("Admin", ""+params.name+" has joined."));
+
+
+      callback();
+    })
+
 
 
     //To check User disConnected or not ...here are calling socket
@@ -50,7 +74,7 @@ io.on('connection', (socket)=>{
 
     //creatmessage getting that is created in index.js(clint side)
     socket.on('createmessage', (msg, callback)=>{
-      console.log('Message',msg);
+      //console.log('Message',msg);
       //io.emit is for broadcasting including him also
       io.emit('newmsg',generateMessage(msg.from, msg.text));
 
@@ -64,12 +88,18 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('disconnect',()=>{
-      console.log('User disConnected');
+      var user = users.removeUser(socket.id);
+
+      if(user){
+        io.to(user.room).emit('newmsg', generateMessage('Admin', ""+user.name+" has left."));
+        io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+      }
+      //console.log('User disConnected');
     });
 });
 // app.get('/', function (req, res) {
 //   res.send('Hello World!')
 // })
 server.listen(port, function () {
-  console.log('Example app listening on port ${port}!')
+  //console.log('Example app listening on port ${port}!')
 })
