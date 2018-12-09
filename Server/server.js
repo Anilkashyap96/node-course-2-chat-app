@@ -75,8 +75,11 @@ io.on('connection', (socket)=>{
     //creatmessage getting that is created in index.js(clint side)
     socket.on('createmessage', (msg, callback)=>{
       //console.log('Message',msg);
+      var user = users.getUser(socket.id);
+      if(user && isRealString(msg.text)){
+        io.to(user.room).emit('newmsg',generateMessage(user.name, msg.text));
+      }
       //io.emit is for broadcasting including him also
-      io.emit('newmsg',generateMessage(msg.from, msg.text));
 
       //socket.broadcast.emit is same as io.emit but it exclude himself other than him will get the message
       //socket.broadcast.emit('newmsg',generateMessage(msg.from, msg.text));
@@ -84,7 +87,11 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('createLocationMessage',(coords)=>{
-      io.emit('newlocationmsg', generateLocationMessage('Admin', coords.latitude,coords.longitude));
+      var user = users.getUser(socket.id);
+      if(user){
+        io.to(user.room).emit('newlocationmsg', generateLocationMessage(user.name, coords.latitude,coords.longitude));
+      }
+      //io.emit('newlocationmsg', generateLocationMessage('Admin', coords.latitude,coords.longitude));
     });
 
     socket.on('disconnect',()=>{
