@@ -1,7 +1,7 @@
 [{
   id: '/#12poiajdsfoif',
-  name: 'Andrew',
-  room: 'The Office Fans'
+  name: 'Anil',
+  room: 'The Twitter Fans'
 }]
 
 
